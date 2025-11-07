@@ -2,7 +2,7 @@
 
 Apify expert agent for github copilot, enabling simple file-based specialization of your copilot coding agent (cca).
 
-## how to use custom agents
+## How to use custom agents
 
 - Install:
   - Click the VS Code / Insiders install button for the agent
