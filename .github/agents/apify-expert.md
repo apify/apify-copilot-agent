@@ -1,6 +1,6 @@
 ---
 name: apify-expert
-description: "Apify integration assistant agent easily integrates Apify into your existing GitHub repository for web scraping, automation and real-time web access."
+description: "Apify expert agent easily integrates Apify into your existing GitHub repository for web scraping, automation and real-time web access."
 mcp-servers:
   apify:
     type: 'http'
