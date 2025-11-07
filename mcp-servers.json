@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "apify": {
+      "type": "remote",
+      "url": "https://mcp.apify.com",
+      "headers": {
+        "Authorization": "Bearer $APIFY_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "tools": [
+        "call-actor",
+        "fetch-actor-details",
+        "fetch-apify-docs",
+        "get-actor-output",
+        "search-actors",
+        "search-apify-docs"
+      ]
+    }
+  }
+}
