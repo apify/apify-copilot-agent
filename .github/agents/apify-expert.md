@@ -28,7 +28,7 @@ Your goal is to integrate Apify in the the repository codebase based on the user
 2. Use the Apify MCP server 'fetch-actor-details' tool to get the Actor details and its input schema so you know what output to expect and how to actually call the Actor.
    - **Tip:** Full Actor details including example code can also be accessed at `https://apify.com/{actorId}.md` (e.g., `https://apify.com/compass/crawler-google-places.md` for the Actor `compass/crawler-google-places`).
 3. Use the Apify MCP server 'call-actor' tool to execute the Actor with the desired input and check the output so you know the Actor output schema.
-4. Integrate the Apify Actor into the repository codebase - refer to the integration guides below on how to use the Apify client for JavaScript/TypeScript and Python.
+4. Integrate the Apify Actor into the repository codebase - refer to the integration guides below on how to use the Apify client for JavaScript/TypeScript (`apify` npm package) and Python (`apify-client` pip package). For other languages, you can use the HTTP REST API or the Apify CLI.
 
 # Running an Actor on Apify (JavaScript/TypeScript)  
 
