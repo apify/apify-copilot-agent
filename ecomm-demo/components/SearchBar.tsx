@@ -7,18 +7,17 @@ import { Search } from "lucide-react";
 
 interface SearchBarProps {
   onSearch?: (query: string) => void;
+  disabled?: boolean;
 }
 
-export function SearchBar({ onSearch }: SearchBarProps) {
+export function SearchBar({ onSearch, disabled = false }: SearchBarProps) {
   const [query, setQuery] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSearch) {
+    if (onSearch && !disabled) {
       onSearch(query);
     }
-    // Placeholder for actual search functionality
-    console.log("Search query:", query);
   };
 
   return (
@@ -32,10 +31,11 @@ export function SearchBar({ onSearch }: SearchBarProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="pl-10"
+            disabled={disabled}
           />
         </div>
-        <Button type="submit" className="px-8">
-          Submit
+        <Button type="submit" className="px-8" disabled={disabled}>
+          {disabled ? "Searching..." : "Submit"}
         </Button>
       </div>
     </form>
