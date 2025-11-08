@@ -2,6 +2,7 @@ import { products } from "@/data/products";
 import { StatsCards } from "@/components/StatsCards";
 import { ProductTable } from "@/components/ProductTable";
 import { ProductCards } from "@/components/ProductCards";
+import { SearchBar } from "@/components/SearchBar";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 
@@ -35,10 +36,15 @@ export default function Home() {
           <h1 className="text-4xl font-bold tracking-tight mb-3">
             Product Catalog Demo
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
+          <p className="text-lg text-muted-foreground max-w-2xl mb-6">
             Showcase of e-commerce product data ready for Apify integration. 
             This demo displays scraped product information in multiple formats.
           </p>
+          
+          {/* Search Bar */}
+          <div className="mt-8">
+            <SearchBar />
+          </div>
         </div>
 
         {/* Stats Section */}
