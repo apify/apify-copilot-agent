@@ -10,7 +10,7 @@ A GitHub Copilot agent that helps developers integrate [Apify Actors](https://ap
 
 ## 🛠️ What's included
 
-- **Agent file**: `.github/agents/apify-expert.md`
+- **Agent file**: `.github/agents/apify-integration-expert.md`
 - **MCP server**: `apify` (`https://mcp.apify.com`)
 - **Tools**: `search-actors`, `fetch-actor-details`, `call-actor`, `get-actor-output`, `search-apify-docs`, `fetch-apify-docs`
 
