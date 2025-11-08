@@ -1,11 +1,19 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package } from "lucide-react";
+import { Product } from "@/lib/types";
 
 interface StatsCardsProps {
-  productCount: number;
+  products: Product[];
+  dataSource: "Mock" | "Apify";
 }
 
-export function StatsCards({ productCount }: StatsCardsProps) {
+export function StatsCards({ products, dataSource }: StatsCardsProps) {
+  const productCount = products.length;
+  
+  const averagePrice = productCount > 0
+    ? products.reduce((sum, product) => sum + product.price, 0) / productCount
+    : 0;
+
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <Card>
@@ -27,9 +35,11 @@ export function StatsCards({ productCount }: StatsCardsProps) {
           <span className="text-lg">$</span>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">-</div>
+          <div className="text-2xl font-bold">
+            {averagePrice > 0 ? `$${averagePrice.toFixed(2)}` : '-'}
+          </div>
           <p className="text-xs text-muted-foreground">
-            Will be calculated from data
+            {averagePrice > 0 ? 'Calculated from data' : 'No data available'}
           </p>
         </CardContent>
       </Card>
@@ -40,9 +50,9 @@ export function StatsCards({ productCount }: StatsCardsProps) {
           <span className="text-lg">🔗</span>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">Mock</div>
+          <div className="text-2xl font-bold">{dataSource}</div>
           <p className="text-xs text-muted-foreground">
-            Ready for Apify integration
+            {dataSource === "Apify" ? "Real e-commerce data" : "Ready for Apify integration"}
           </p>
         </CardContent>
       </Card>

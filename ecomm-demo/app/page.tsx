@@ -1,4 +1,8 @@
-import { products } from "@/data/products";
+"use client";
+
+import { useState } from "react";
+import { products as mockProducts } from "@/data/products";
+import { Product } from "@/lib/types";
 import { StatsCards } from "@/components/StatsCards";
 import { ProductTable } from "@/components/ProductTable";
 import { ProductCards } from "@/components/ProductCards";
@@ -7,6 +11,40 @@ import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [dataSource, setDataSource] = useState<"Mock" | "Apify">("Mock");
+
+  const handleSearch = async (query: string) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/scrape', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to scrape data');
+      }
+
+      const data = await response.json();
+      setProducts(data.products);
+      setDataSource("Apify");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Search error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -37,19 +75,31 @@ export default function Home() {
             Product Catalog Demo
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mb-6">
-            Showcase of e-commerce product data ready for Apify integration. 
-            This demo displays scraped product information in multiple formats.
+            Search for products from Amazon using the Apify E-Commerce Scraping Tool. 
+            Enter a product keyword below to scrape real product data.
           </p>
           
           {/* Search Bar */}
           <div className="mt-8">
-            <SearchBar />
+            <SearchBar onSearch={handleSearch} />
           </div>
+
+          {/* Loading/Error States */}
+          {isLoading && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+              <p className="text-blue-700">🔄 Scraping product data from Amazon... This may take a minute.</p>
+            </div>
+          )}
+          {error && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-red-700">❌ Error: {error}</p>
+            </div>
+          )}
         </div>
 
         {/* Stats Section */}
         <section className="mb-12">
-          <StatsCards productCount={products.length} />
+          <StatsCards products={products} dataSource={dataSource} />
         </section>
 
         <Separator className="my-12" />
