@@ -12,12 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Print environment variables
-        run: env | grep VERCEL
-      - name: Print environment variables
-        run: env | grep APIFY
-      - name: Enable shell debug
-        run: set -x
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
