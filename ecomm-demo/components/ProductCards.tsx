@@ -3,18 +3,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
-import Image from "next/image";
+import { RemoteImage } from "@/components/RemoteImage";
 
 interface ProductCardsProps {
   products: Product[];
 }
 
 export function ProductCards({ products }: ProductCardsProps) {
-  const truncate = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + "...";
-  };
-
   return (
     <div>
       <div className="mb-6">
@@ -28,7 +23,7 @@ export function ProductCards({ products }: ProductCardsProps) {
         {products.map((product, index) => (
           <Card key={index} className="flex flex-col overflow-hidden">
             <div className="relative h-48 w-full overflow-hidden bg-muted">
-              <Image
+              <RemoteImage
                 src={product.image}
                 alt={product.title}
                 fill

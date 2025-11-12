@@ -3,3 +3,4 @@ package-lock.json
 .DS_Store
 *.log
 .env
+cursor_debugging_apify_integration_in_e.md

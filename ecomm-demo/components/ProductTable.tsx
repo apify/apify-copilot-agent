@@ -2,7 +2,7 @@ import { Product } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
+import { RemoteImage } from "@/components/RemoteImage";
 
 interface ProductTableProps {
   products: Product[];
@@ -39,7 +39,7 @@ export function ProductTable({ products }: ProductTableProps) {
                 <TableRow key={index}>
                   <TableCell>
                     <div className="relative h-12 w-12 overflow-hidden rounded-md">
-                      <Image
+                      <RemoteImage
                         src={product.image}
                         alt={product.title}
                         fill
