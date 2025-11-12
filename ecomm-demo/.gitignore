@@ -31,9 +31,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env
-.env.local
-.env.*.local
+.env*
 
 # vercel
 .vercel
@@ -45,3 +43,4 @@ next-env.d.ts
 # internal
 task-manager.md
 PRD.md
+README.md

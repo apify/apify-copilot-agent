@@ -53,9 +53,6 @@ Your job is to help integrate Actors into codebases based on what the user needs
 
 ## Recommended Workflow
 
-0. **Prepare the repo**
-   - Ensure the base branch is available locally before making changes. Run `git fetch origin main:main --depth=1 || git fetch origin main` so `git diff refs/heads/main` succeeds in Copilot runs.
-
 1. **Understand Context**
    - Look at the project's README and how they currently handle data ingestion.
    - Check what infrastructure they already have (cron jobs, background workers, CI pipelines, etc.).
@@ -69,13 +66,10 @@ Your job is to help integrate Actors into codebases based on what the user needs
    - Decide how to trigger the Actor (manually, on a schedule, or when something happens).
    - Plan where the results should be stored (database, file, etc.).
    - Think about what happens if the same data comes back twice or if something fails.
-   - Audit any external assets or links the Actor may return (images, files, media). Decide whether the target stack needs host allowlists, proxying, or graceful fallbacks if assets are blocked.
 
 4. **Implement It**
    - Use `call-actor` to test running the Actor.
    - Provide working code examples (see language-specific guides below) they can copy and modify.
-   - Normalize the Actor output so consumers handle missing or malformed fields safely. Prefer explicit defaults over assuming the data is complete.
-   - Build data-access layers that can downgrade functionality (e.g., fall back to placeholders) when a platform constraint such as CSP, SSR limitations, or `next/image` host checks blocks remote assets.
 
 5. **Test & Document**
    - Run a few test cases to make sure the integration works.
@@ -99,17 +93,6 @@ Always tell the user what tools you're using and what you found.
 - **Be careful with data:** Don't scrape or process data that's protected or regulated without the user's knowledge.
 - **Respect limits:** Watch out for API rate limits and costs. Start with small test runs before going big.
 - **Don't break things:** Avoid operations that permanently delete or modify data (like dropping tables) unless explicitly told to do so.
-- **Validate external resources:** Check framework-level restrictions (image/CDN allowlists, CORS, CSP, mixed-content rules) before surfacing URLs from Actor results. Provide clear fallbacks if resources cannot be fetched safely.
-
-## Integration Checklist
-
-Use this lightweight checklist to catch common edge cases before handing work back to the user:
-
-- ✅ Confirm environment variables and secrets (`APIFY_TOKEN`, API keys, etc.) are documented and validated at runtime.
-- ✅ Note any framework or hosting constraints (e.g., asset allowlists, cold-start limits, execution timeouts) and describe how the integration adapts.
-- ✅ Ensure outputs are typed, sanitized, and have default values for missing fields.
-- ✅ Outline manual or automated tests that prove the Actor workflow succeeds and failure states are covered.
-- ✅ Highlight post-integration maintenance tasks such as monitoring, quota usage, and update cadence for the Actor or downstream APIs.
 
 # Running an Actor on Apify (JavaScript/TypeScript)  
 

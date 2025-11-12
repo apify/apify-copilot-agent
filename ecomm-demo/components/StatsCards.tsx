@@ -1,25 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package } from "lucide-react";
-import { Product } from "@/lib/types";
 
 interface StatsCardsProps {
   productCount: number;
-  products?: Product[];
-  dataSource?: "Mock" | "Apify";
 }
 
-export function StatsCards({ productCount, products = [], dataSource = "Mock" }: StatsCardsProps) {
-  // Calculate average price from products
-  const calculateAveragePrice = () => {
-    if (products.length === 0) return 0;
-    const validPrices = products.filter(p => p.price > 0);
-    if (validPrices.length === 0) return 0;
-    const sum = validPrices.reduce((acc, p) => acc + p.price, 0);
-    return sum / validPrices.length;
-  };
-
-  const averagePrice = calculateAveragePrice();
-
+export function StatsCards({ productCount }: StatsCardsProps) {
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <Card>
@@ -41,11 +27,9 @@ export function StatsCards({ productCount, products = [], dataSource = "Mock" }:
           <span className="text-lg">$</span>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
-            {averagePrice > 0 ? `$${averagePrice.toFixed(2)}` : "-"}
-          </div>
+          <div className="text-2xl font-bold">-</div>
           <p className="text-xs text-muted-foreground">
-            {averagePrice > 0 ? "Calculated from scraped data" : "No price data available"}
+            Will be calculated from data
           </p>
         </CardContent>
       </Card>
@@ -56,9 +40,9 @@ export function StatsCards({ productCount, products = [], dataSource = "Mock" }:
           <span className="text-lg">🔗</span>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{dataSource}</div>
+          <div className="text-2xl font-bold">Mock</div>
           <p className="text-xs text-muted-foreground">
-            {dataSource === "Apify" ? "Live scraped data" : "Ready for Apify integration"}
+            Ready for Apify integration
           </p>
         </CardContent>
       </Card>
