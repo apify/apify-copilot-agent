@@ -53,9 +53,6 @@ Your job is to help integrate Actors into codebases based on what the user needs
 
 ## Recommended Workflow
 
-0. **Prepare the repo**
-   - Ensure the base branch is available locally before making changes. Run `git fetch origin main:main --depth=1 || git fetch origin main` so `git diff refs/heads/main` succeeds in Copilot runs.
-
 1. **Understand Context**
    - Look at the project's README and how they currently handle data ingestion.
    - Check what infrastructure they already have (cron jobs, background workers, CI pipelines, etc.).
