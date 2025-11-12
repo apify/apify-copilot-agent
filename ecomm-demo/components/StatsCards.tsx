@@ -1,11 +1,29 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package } from "lucide-react";
+import { formatPrice } from "@/lib/utils";
 
 interface StatsCardsProps {
   productCount: number;
+  averagePrice?: number | string | null;
+  currency?: string;
+  dataSourceLabel?: string;
 }
 
-export function StatsCards({ productCount }: StatsCardsProps) {
+export function StatsCards({
+  productCount,
+  averagePrice,
+  currency,
+  dataSourceLabel,
+}: StatsCardsProps) {
+  const priceLabel =
+    averagePrice === undefined
+      ? "-"
+      : formatPrice(averagePrice, {
+          currency: currency ?? "USD",
+          fallback: "-",
+        });
+  const sourceLabel = dataSourceLabel ?? "Mock";
+
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <Card>
@@ -27,10 +45,8 @@ export function StatsCards({ productCount }: StatsCardsProps) {
           <span className="text-lg">$</span>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">-</div>
-          <p className="text-xs text-muted-foreground">
-            Will be calculated from data
-          </p>
+          <div className="text-2xl font-bold">{priceLabel}</div>
+          <p className="text-xs text-muted-foreground">Calculated from loaded data</p>
         </CardContent>
       </Card>
 
@@ -40,7 +56,7 @@ export function StatsCards({ productCount }: StatsCardsProps) {
           <span className="text-lg">🔗</span>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">Mock</div>
+          <div className="text-2xl font-bold">{sourceLabel}</div>
           <p className="text-xs text-muted-foreground">
             Ready for Apify integration
           </p>

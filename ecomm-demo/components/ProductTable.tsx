@@ -1,8 +1,9 @@
-import { Product } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RemoteImage } from "@/components/RemoteImage";
+import { Product } from "@/lib/types";
+import { formatPrice } from "@/lib/utils";
 
 interface ProductTableProps {
   products: Product[];
@@ -51,9 +52,7 @@ export function ProductTable({ products }: ProductTableProps) {
                   <TableCell className="font-medium">
                     {product.title}
                   </TableCell>
-                  <TableCell className="font-semibold">
-                    ${product.price.toFixed(2)}
-                  </TableCell>
+                  <TableCell className="font-semibold">{formatPrice(product.price)}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {truncate(product.description, 100)}
                   </TableCell>

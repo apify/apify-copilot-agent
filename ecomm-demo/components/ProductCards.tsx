@@ -1,9 +1,10 @@
-import { Product } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import { RemoteImage } from "@/components/RemoteImage";
+import { Product } from "@/lib/types";
+import { formatPrice } from "@/lib/utils";
 
 interface ProductCardsProps {
   products: Product[];
@@ -38,7 +39,7 @@ export function ProductCards({ products }: ProductCardsProps) {
                   {product.title}
                 </CardTitle>
                 <Badge variant="secondary" className="shrink-0">
-                  ${product.price}
+                  {formatPrice(product.price)}
                 </Badge>
               </div>
             </CardHeader>
