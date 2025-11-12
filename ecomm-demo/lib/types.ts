@@ -6,3 +6,18 @@ export type Product = {
   price: number;
 };
 
+// Apify E-Commerce Scraper output type
+export type ApifyProductOutput = {
+  url?: string;
+  name?: string;
+  image?: string;
+  description?: string | null;
+  offers?: {
+    price?: number | null;
+    priceCurrency?: string | null;
+  };
+  brand?: {
+    slogan?: string | null;
+  };
+};
+
