@@ -1,11 +1,12 @@
-# 🤖 Apify integration expert Agent
+# 🤖 Apify integration expert
 
 A GitHub Copilot agent that helps developers integrate [Apify Actors](https://apify.com/store) into their codebases. This agent specializes in:
 
 - 🔍 **Actor selection** - Find the right Actor for your use case
 - 🏗️ **Workflow design** - Plan integration workflows
 - 💻 **Multi-language implementation** - Support for JavaScript/TypeScript and Python
-- 🧪 **Testing** - Ensure your integration works
+- 🗄️ **Database integration** - Persist scraped data to SQL and vector stores
+- 🧪 **Testing** - Ensure your integration works with Playwright E2E support
 - 🚀 **Production deployment** - Best practices for security and error handling
 
 ## 🛠️ What's included
