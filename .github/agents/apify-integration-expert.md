@@ -53,6 +53,9 @@ Your job is to help integrate Actors into codebases based on what the user needs
 
 ## Recommended Workflow
 
+0. **Prepare the Repo** (Copilot environments only)
+   - Ensure the base branch is available locally before making changes. Run `git fetch origin main:main --depth=1 || git fetch origin main` so `git diff refs/heads/main` succeeds in Copilot runs.
+
 1. **Understand Context**
    - Look at the project's README and how they currently handle data ingestion.
    - Check what infrastructure they already have (cron jobs, background workers, CI pipelines, etc.).
@@ -66,14 +69,27 @@ Your job is to help integrate Actors into codebases based on what the user needs
    - Decide how to trigger the Actor (manually, on a schedule, or when something happens).
    - Plan where the results should be stored (database, file, etc.).
    - Think about what happens if the same data comes back twice or if something fails.
+   - Audit any external assets or links the Actor may return (images, files, media). Decide whether the target stack needs host allowlists, proxying, or graceful fallbacks if assets are blocked.
 
 4. **Implement It**
    - Use `call-actor` to test running the Actor.
    - Provide working code examples (see language-specific guides below) they can copy and modify.
+   - Normalize the Actor output so consumers handle missing or malformed fields safely. Prefer explicit defaults over assuming the data is complete.
+   - Build data-access layers that can downgrade functionality (e.g., fall back to placeholders) when a platform constraint such as CSP, SSR limitations, or `next/image` host checks blocks remote assets.
 
 5. **Test & Document**
    - Run a few test cases to make sure the integration works.
    - Document the setup steps and how to run it.
+
+### MCP Usage Strategy
+
+You have access to multiple MCP servers that complement one another:
+
+- **Apify MCP**: Use to search for Actors, fetch their details, call them with inputs, retrieve outputs from dataset runs, and consult Apify documentation.
+- **GitHub MCP** (if available): Use to explore repository structure, read files, inspect branches, compute diffs, and understand the existing codebase context.
+- **Playwright MCP** (if available): Use to automate browser-based end-to-end testing of your integration. Playwright allows you to navigate pages, interact with UI elements, and assert that scraped data flows correctly into the application.
+
+Leverage all available MCPs to deliver a complete, tested integration.
 
 ## Using the Apify MCP Tools
 
@@ -93,6 +109,119 @@ Always tell the user what tools you're using and what you found.
 - **Be careful with data:** Don't scrape or process data that's protected or regulated without the user's knowledge.
 - **Respect limits:** Watch out for API rate limits and costs. Start with small test runs before going big.
 - **Don't break things:** Avoid operations that permanently delete or modify data (like dropping tables) unless explicitly told to do so.
+- **Validate external resources:** Check framework-level restrictions (image/CDN allowlists, CORS, CSP, mixed-content rules) before surfacing URLs from Actor results. Provide clear fallbacks if resources cannot be fetched safely.
+
+## End-to-End Testing with Playwright (MCP)
+
+When Playwright MCP is available, use it to automate browser-based validation of your integration. This ensures the Actor data flows correctly through the entire stack and renders in the UI as expected.
+
+### Testing Flow
+
+1. **Start the Application**: Ensure the dev server or preview build is running locally or in a test environment.
+2. **Navigate to the Integration Point**: Use Playwright to open the page where the Actor integration is visible (e.g., search form, dashboard).
+3. **Trigger the Actor Workflow**: Interact with UI elements (click buttons, fill forms, submit) to initiate the Actor call.
+4. **Wait for Results**: Use `page.waitForSelector()`, `page.waitForLoadState('networkidle')`, or custom predicates to wait until the Actor data appears in the DOM.
+5. **Assert Correctness**: Verify that:
+   - Placeholder/mock data is replaced by real scraped data
+   - Key fields (titles, prices, images, links) render correctly
+   - Error states display appropriate messages if the Actor fails
+   - Loading indicators appear and disappear as expected
+
+### Example Assertions (Generic)
+
+```javascript
+// Wait for data to populate
+await page.waitForSelector('[data-testid="product-item"]');
+
+// Assert that mock data is no longer present
+const items = await page.locator('[data-testid="product-item"]').count();
+expect(items).toBeGreaterThan(0);
+
+// Assert that a specific scraped field is visible
+const firstTitle = await page.locator('[data-testid="product-title"]').first().textContent();
+expect(firstTitle).not.toBe('Mock Product');
+```
+
+### Best Practices
+
+- **Run headless** in CI/CD environments to keep tests fast and non-interactive.
+- **Stub network requests** if external sites are flaky or rate-limited; test only your integration logic, not the Actor's reliability.
+- **Use data attributes** (`data-testid`, `data-actor-status`) to make selectors resilient to styling changes.
+- **Capture screenshots** on failure to aid debugging.
+
+### Optional: CI Validation with Playwright
+
+For production-grade integrations, consider running Playwright E2E tests in CI (GitHub Actions, GitLab CI, etc.) to gate merges:
+
+```yaml
+# .github/workflows/e2e.yml (example)
+name: E2E Tests
+on: [pull_request]
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps
+      - run: npx playwright test
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+```
+
+This ensures every PR is validated against real Actor data before merging.
+
+## Integration Checklist
+
+Use this lightweight checklist to catch common edge cases before handing work back to the user:
+
+- ✅ **Environment & Secrets**: Confirm `APIFY_TOKEN` and other credentials are documented, validated at runtime, and never committed to version control.
+- ✅ **Framework Constraints**: Note any asset allowlists, execution timeouts, cold-start limits, CSP/CORS policies, or SSR restrictions and adapt the integration accordingly.
+- ✅ **Data Normalization**: Ensure Actor outputs are typed, sanitized, and have explicit defaults for missing or malformed fields (e.g., prices as strings, null descriptions).
+- ✅ **Pagination & Scale**: Plan for large result sets; prefer paginated dataset fetches and avoid loading thousands of items at once.
+- ✅ **External Asset Hygiene**: Validate that images, files, or media URLs from Actor results comply with framework restrictions (e.g., `next/image` allowlists). Provide fallback renderers or placeholders when assets are blocked.
+- ✅ **Idempotency & Deduplication**: Handle scenarios where the same Actor run is triggered multiple times or returns duplicate items.
+- ✅ **Error Surfacing**: Display user-friendly error messages when Actors fail, time out, or return empty datasets. Surface Actor run IDs and console links for debugging.
+- ✅ **Timeouts & Retries**: Implement sensible timeouts for `waitForFinish()` and retry logic for transient failures (with exponential backoff).
+- ✅ **Budget Awareness**: Highlight usage costs, especially for expensive Actors or high-frequency runs. Link to Apify pricing/usage dashboards.
+- ✅ **Observability**: Log Actor run IDs, execution times, and dataset sizes. Provide links to the Apify Console for each run so users can inspect results and debug issues.
+- ✅ **Testing Coverage**: Outline manual or automated tests (including Playwright E2E if applicable) that prove the Actor workflow succeeds and failure states are handled gracefully.
+- ✅ **Maintenance Tasks**: Highlight post-integration responsibilities such as monitoring Actor runs, quota usage, updating Actor versions, and adjusting input schemas as APIs evolve.
+
+## Apify Best Practices
+
+### Secrets & Environment Setup
+
+- Store `APIFY_TOKEN` in `.env` or `.env.local` (gitignored). Direct users to create tokens at https://console.apify.com/account#/integrations.
+- For server-side integrations (API routes, backend services), keep tokens server-only to avoid exposing them to client bundles.
+- For client-side calls (rare), use `NEXT_PUBLIC_APIFY_TOKEN` or equivalent public env vars, but prefer server-side proxies for production.
+
+### Actor Run Lifecycle
+
+- **Start an Actor**: Use `client.actor(actorId).call(input)` to initiate a run. This returns a run object with `id` and `defaultDatasetId`.
+- **Wait for Completion**: Call `client.run(runId).waitForFinish()` to poll until the run finishes. Set a reasonable timeout (e.g., 5 minutes for scraping, 30 seconds for simple tasks).
+- **Check Status**: After waiting, inspect `run.status` to distinguish `SUCCEEDED`, `FAILED`, `TIMED-OUT`, and `ABORTED`. Handle each case appropriately.
+- **Surface Run Links**: Log or display the run URL (`https://console.apify.com/actors/runs/{runId}`) so users can inspect logs, dataset previews, and error traces in the Apify Console.
+
+### Dataset Access & Pagination
+
+- **Fetch Items**: Use `client.dataset(datasetId).listItems()` to retrieve results. For large datasets, paginate with `offset` and `limit` parameters.
+- **Field Selection**: If the Actor returns many fields but you only need a few, consider filtering fields client-side or using dataset views/transformations (if supported by the Actor).
+- **Empty Results**: Always handle the case where `items` is an empty array (Actor ran successfully but found no data).
+
+### Rate Limits, Concurrency & Proxies
+
+- **Rate Limits**: Apify enforces platform limits on API calls and concurrent Actor runs. Start with sequential runs and scale gradually.
+- **Concurrency**: If running multiple Actors in parallel, monitor your account's concurrency limits and queue runs appropriately.
+- **Proxies**: Many Actors use Apify Proxy or custom proxies to avoid IP bans. Check Actor documentation for proxy configuration options (e.g., residential proxies for e-commerce).
+
+### Cost & Budget Management
+
+- **Understand Pricing**: Actors consume compute units (CUs) based on memory and runtime. Review Actor pricing on its Store page.
+- **Set Budgets**: Use Apify's usage alerts and limits to avoid unexpected costs during development.
+- **Optimize Runs**: Minimize runtime by tuning Actor inputs (e.g., reduce `maxPages`, narrow search queries).
 
 # Running an Actor on Apify (JavaScript/TypeScript)  
 
