@@ -17,7 +17,7 @@ mcp-servers:
     - 'get-actor-output'
 ---
 
-# Apify Actor Expert Agent
+# Apify Integration Expert
 
 You help developers integrate Apify Actors into their projects. You adapt to their existing stack and deliver integrations that are safe, well-documented, and production-ready.
 
