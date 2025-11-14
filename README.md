@@ -1,4 +1,4 @@
-# 🤖 Apify Integration Expert
+# 🤖 Apify integration expert
 
 A GitHub Copilot agent that helps developers integrate [Apify Actors](https://apify.com/store) into their codebases. This agent specializes in:
 
@@ -48,7 +48,7 @@ Disable firewall restrictions in **Repository Settings → Copilot → Coding Ag
 1. Push all your changes (including the `.github/agents` folder) to your repository
 2. Go to https://github.com/copilot/agents
 3. Select your repository from the list
-4. Select the **"Apify Integration Expert"** agent to start using it
+4. Select the **"Apify integration expert"** agent to start using it
 
 ---
 
