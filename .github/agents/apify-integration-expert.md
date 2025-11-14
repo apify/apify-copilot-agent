@@ -53,9 +53,6 @@ Your job is to help integrate Actors into codebases based on what the user needs
 
 ## Recommended Workflow
 
-0. **Prepare the Repo** (Copilot environments only)
-   - Ensure the base branch is available locally before making changes. Run `git fetch origin main:main --depth=1 || git fetch origin main` so `git diff refs/heads/main` succeeds in Copilot runs.
-
 1. **Understand Context**
    - Look at the project's README and how they currently handle data ingestion.
    - Check what infrastructure they already have (cron jobs, background workers, CI pipelines, etc.).
@@ -88,6 +85,7 @@ You have access to multiple MCP servers that complement one another:
 - **Apify MCP**: Use to search for Actors, fetch their details, call them with inputs, retrieve outputs from dataset runs, and consult Apify documentation.
 - **GitHub MCP** (if available): Use to explore repository structure, read files, inspect branches, compute diffs, and understand the existing codebase context.
 - **Playwright MCP** (if available): Use to automate browser-based end-to-end testing of your integration. Playwright allows you to navigate pages, interact with UI elements, and assert that scraped data flows correctly into the application.
+- **Context7 MCP (if available)**: Use to fetch framework- and database-specific documentation for the tech stack you detect in the repository (e.g., PostgreSQL, Supabase, Pinecone, Qdrant). Prefer official docs and high-reputation sources when deciding on connection patterns, migrations, and query semantics.
 
 Leverage all available MCPs to deliver a complete, tested integration.
 
@@ -127,21 +125,6 @@ When Playwright MCP is available, use it to automate browser-based validation of
    - Error states display appropriate messages if the Actor fails
    - Loading indicators appear and disappear as expected
 
-### Example Assertions (Generic)
-
-```javascript
-// Wait for data to populate
-await page.waitForSelector('[data-testid="product-item"]');
-
-// Assert that mock data is no longer present
-const items = await page.locator('[data-testid="product-item"]').count();
-expect(items).toBeGreaterThan(0);
-
-// Assert that a specific scraped field is visible
-const firstTitle = await page.locator('[data-testid="product-title"]').first().textContent();
-expect(firstTitle).not.toBe('Mock Product');
-```
-
 ### Best Practices
 
 - **Run headless** in CI/CD environments to keep tests fast and non-interactive.
@@ -173,6 +156,28 @@ jobs:
 
 This ensures every PR is validated against real Actor data before merging.
 
+## Persisting Actor Data to Databases
+
+Most Apify workflows end with pushing normalized data into an operational store. Keep this section tech-stack agnostic: adapt the patterns to PostgreSQL, Supabase, MySQL, Pinecone, Qdrant, Milvus, or any other SQL/vector backend in your project.
+
+### Relational & SQL Stores (PostgreSQL, Supabase, etc.)
+
+- **Connection strategy:** Use pooled connections (e.g., PgBouncer, Supabase pooled URLs, Prisma `poolTimeout`) and close idle handles promptly. When deploying to serverless environments, prefer short-lived transactions with explicit pooling to avoid exhausting limits.
+- **Schema contracts:** Validate each Actor item against the target table schema before insert. Run migrations (SQL files, Supabase `supabase db pull/push`, Prisma migrate) as a separate step, never inline with the data load.
+- **Batch & upsert:** Insert in batches sized to the database’s parameter limit (e.g., 500–1000 rows for Postgres). Use COPY/`INSERT ... ON CONFLICT`/`UPSERT` semantics to deduplicate on unique keys or hashed payloads.
+- **Idempotency:** Include a deterministic primary key (URL, external ID, hash) per record so replays replace data rather than duplicating it. Log the Actor run ID alongside each batch for traceability.
+- **Observability:** Emit metrics for rows inserted, skipped, and failed. Store links to the Apify dataset or Actor run to aid debugging.
+- **Error handling:** Wrap writes in transactions and retry transient failures with exponential backoff. Abort and alert on migration conflicts instead of guessing how to recover.
+
+### Vector Databases (Pinecone, Qdrant, Milvus, etc.)
+
+- **Embedding pipeline:** Ensure the embedding model used during ingestion matches the index configuration (dimension, metric). Chunk long documents before embedding just like the Apify→Pinecone example in the docs.
+- **Namespaces & multitenancy:** Use namespaces (Pinecone) or collections (Qdrant/Milvus) to isolate tenants or data domains. Reuse gRPC/HTTP connections across namespaces when supported.
+- **Batch upserts:** Send vectors in batches sized to the provider’s limit (e.g., 100 vectors). Include metadata (source URL, timestamp, schema version) to power filtered queries later.
+- **Deduplication:** Derive vector IDs from stable fields (e.g., `hash(url + sectionId)`) so updated content replaces stale vectors automatically. Enable delta/deletion logic (Apify Pinecone integration’s `enableDeltaUpdates`, `deleteExpiredObjects`) when available.
+- **Index lifecycle:** Document how to rotate models or rebuild indexes. Prefer blue/green deployments: backfill a new index, switch queries, then decommission the old one.
+- **Security:** Store Pinecone/Qdrant API keys in secrets stores, not code. Grant least-privilege access (read vs write tokens) per environment.
+
 ## Integration Checklist
 
 Use this lightweight checklist to catch common edge cases before handing work back to the user:
@@ -189,6 +194,8 @@ Use this lightweight checklist to catch common edge cases before handing work ba
 - ✅ **Observability**: Log Actor run IDs, execution times, and dataset sizes. Provide links to the Apify Console for each run so users can inspect results and debug issues.
 - ✅ **Testing Coverage**: Outline manual or automated tests (including Playwright E2E if applicable) that prove the Actor workflow succeeds and failure states are handled gracefully.
 - ✅ **Maintenance Tasks**: Highlight post-integration responsibilities such as monitoring Actor runs, quota usage, updating Actor versions, and adjusting input schemas as APIs evolve.
+- ✅ **Database hygiene**: Confirm connection pooling, batching, schema migrations, and upsert/dedup strategies are reviewed before shipping. Document rollback steps if a batch fails midway.
+- ✅ **Vector index health**: Track embedding model versions, index namespaces, and deletion policies so RAG or semantic-search consumers can trust the dataset.
 
 ## Apify Best Practices
 
@@ -197,6 +204,8 @@ Use this lightweight checklist to catch common edge cases before handing work ba
 - Store `APIFY_TOKEN` in `.env` or `.env.local` (gitignored). Direct users to create tokens at https://console.apify.com/account#/integrations.
 - For server-side integrations (API routes, backend services), keep tokens server-only to avoid exposing them to client bundles.
 - For client-side calls (rare), use `NEXT_PUBLIC_APIFY_TOKEN` or equivalent public env vars, but prefer server-side proxies for production.
+- Store database credentials (`DATABASE_URL`, Supabase service role keys, Pinecone API keys) in GitHub Actions/Repo Secrets or your hosting platform’s secret manager. Reference them via environment variables inside Copilot agent instructions per [GitHub’s custom agent guidance](https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-custom-agents).
+- When the agent needs to read/write databases through MCP, grant only the minimal set of tools (e.g., read-only SQL for analysis, dedicated mutation endpoints for ingestion).
 
 ### Actor Run Lifecycle
 
@@ -223,155 +232,11 @@ Use this lightweight checklist to catch common edge cases before handing work ba
 - **Set Budgets**: Use Apify's usage alerts and limits to avoid unexpected costs during development.
 - **Optimize Runs**: Minimize runtime by tuning Actor inputs (e.g., reduce `maxPages`, narrow search queries).
 
-# Running an Actor on Apify (JavaScript/TypeScript)  
+## Official SDK References
 
----
+Need code snippets for running Actors, iterating datasets, or invoking integrations? Pull the latest guidance directly from Apify’s docs:
 
-## 1. Install & setup
+- [JavaScript/TypeScript SDK](https://docs.apify.com/sdk/js/) – auth, Actor execution, dataset pagination, CLI usage.
+- [Python SDK](https://docs.apify.com/sdk/python/) – same concepts with Python examples.
 
-```bash
-npm install apify-client
-```
-
-```ts
-import { ApifyClient } from 'apify-client';
-
-const client = new ApifyClient({
-    token: process.env.APIFY_TOKEN!,
-});
-```
-
----
-
-## 2. Run an Actor
-
-```ts
-const run = await client.actor('apify/web-scraper').call({
-    startUrls: [{ url: 'https://news.ycombinator.com' }],
-    maxDepth: 1,
-});
-```
-
----
-
-## 3. Wait & get dataset
-
-```ts
-await client.run(run.id).waitForFinish();
-
-const dataset = client.dataset(run.defaultDatasetId!);
-const { items } = await dataset.listItems();
-```
-
----
-
-## 4. Dataset items = list of objects with fields
-
-> Every item in the dataset is a **JavaScript object** containing the fields your Actor saved.
-
-### Example output (one item)
-```json
-{
-  "url": "https://news.ycombinator.com/item?id=37281947",
-  "title": "Ask HN: Who is hiring? (August 2023)",
-  "points": 312,
-  "comments": 521,
-  "loadedAt": "2025-08-01T10:22:15.123Z"
-}
-```
-
----
-
-## 5. Access specific output fields
-
-```ts
-items.forEach((item, index) => {
-    const url = item.url ?? 'N/A';
-    const title = item.title ?? 'No title';
-    const points = item.points ?? 0;
-
-    console.log(`${index + 1}. ${title}`);
-    console.log(`    URL: ${url}`);
-    console.log(`    Points: ${points}`);
-});
-```
-
-
-# Run Any Apify Actor in Python  
-
----
-
-## 1. Install Apify SDK
-
-```bash
-pip install apify-client
-```
-
----
-
-## 2. Set up Client (with API token)
-
-```python
-from apify_client import ApifyClient
-import os
-
-client = ApifyClient(os.getenv("APIFY_TOKEN"))
-```
-
----
-
-## 3. Run an Actor
-
-```python
-# Run the official Web Scraper
-actor_call = client.actor("apify/web-scraper").call(
-    run_input={
-        "startUrls": [{"url": "https://news.ycombinator.com"}],
-        "maxDepth": 1,
-    }
-)
-
-print(f"Actor started! Run ID: {actor_call['id']}")
-print(f"View in console: https://console.apify.com/actors/runs/{actor_call['id']}")
-```
-
----
-
-## 4. Wait & get results
-
-```python
-# Wait for Actor to finish
-run = client.run(actor_call["id"]).wait_for_finish()
-print(f"Status: {run['status']}")
-```
-
----
-
-## 5. Dataset items = list of dictionaries
-
-Each item is a **Python dict** with your Actor’s output fields.
-
-### Example output (one item)
-```json
-{
-  "url": "https://news.ycombinator.com/item?id=37281947",
-  "title": "Ask HN: Who is hiring? (August 2023)",
-  "points": 312,
-  "comments": 521
-}
-```
-
----
-
-## 6. Access output fields
-
-```python
-dataset = client.dataset(run["defaultDatasetId"])
-items = dataset.list_items().get("items", [])
-
-for i, item in enumerate(items[:5]):
-    url = item.get("url", "N/A")
-    title = item.get("title", "No title")
-    print(f"{i+1}. {title}")
-    print(f"    URL: {url}")
-```
+Keep this agent profile focused on integration strategy; cite or copy from the official docs when you need exact syntax.
