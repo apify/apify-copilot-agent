@@ -6,3 +6,14 @@ export type Product = {
   price: number;
 };
 
+export type ScraperResponse = {
+  products: Product[];
+  runId?: string;
+  runUrl?: string;
+};
+
+export type ScraperError = {
+  error: string;
+  details?: string;
+};
+
