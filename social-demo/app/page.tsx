@@ -9,22 +9,31 @@ import { EngagementChart } from "@/components/EngagementChart";
 import { PostsGrid } from "@/components/PostsGrid";
 import { HashtagCloud } from "@/components/HashtagCloud";
 import { InstagramProfile } from "@/lib/types";
-import { fetchInstagramProfile } from "@/data/mock-profile";
+
 
 export default function Home() {
   const [profile, setProfile] = useState<InstagramProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async (username: string) => {
     setIsLoading(true);
+    setError(null);
     try {
-      // Simulate fetching data from Apify actor
-      // In production, this would call an API route that triggers the Apify actor
-      const data = await fetchInstagramProfile(username);
+      // Call the API route to fetch real Instagram data via Apify
+      const response = await fetch(`/api/instagram/${encodeURIComponent(username)}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch profile");
+      }
+
+      const data = await response.json();
       setProfile(data);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
-      // In production, show error message to user
+      setError(error instanceof Error ? error.message : "Failed to fetch profile");
+      setProfile(null);
     } finally {
       setIsLoading(false);
     }
@@ -65,6 +74,13 @@ export default function Home() {
             </p>
           </div>
           <SearchBar onSearch={handleSearch} isLoading={isLoading} />
+          
+          {/* Error Message */}
+          {error && (
+            <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-center">
+              <p className="text-destructive font-medium">{error}</p>
+            </div>
+          )}
         </div>
 
         {/* Dashboard Content */}
