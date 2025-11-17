@@ -19,6 +19,15 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "picsum.photos",
       },
+      // Instagram CDN patterns for profile pictures and posts
+      {
+        protocol: "https",
+        hostname: "**.fbcdn.net",
+      },
+      {
+        protocol: "https",
+        hostname: "scontent-*.cdninstagram.com",
+      },
     ],
   },
 };
