@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Apify Brand Colors */
+    --brand-primary: 221 85% 54%; /* #1672EB */
+    --brand-accent: 217 100% 54%; /* #1480FF */
+    --brand-text: 228 5% 13%; /* #1F2123 */
+    --brand-surface: 0 0% 100%; /* #FFFFFF */
+    --brand-button-primary: 228 5% 15%; /* #242528 */
+
+    /* ShadCN Variables with Apify Colors */
+    --background: 0 0% 100%;
+    --foreground: 228 5% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 228 5% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 228 5% 13%;
+    --primary: 221 85% 54%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 10% 96%;
+    --secondary-foreground: 228 5% 13%;
+    --muted: 210 10% 96%;
+    --muted-foreground: 228 5% 40%;
+    --accent: 217 100% 54%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 10% 90%;
+    --input: 214 10% 90%;
+    --ring: 221 85% 54%;
+    --radius: 0.5rem;
+
+    /* Chart colors for data visualization */
+    --chart-1: 221 85% 54%; /* Primary blue */
+    --chart-2: 217 100% 54%; /* Accent blue */
+    --chart-3: 142 76% 36%; /* Success green */
+    --chart-4: 45 100% 51%; /* Warning yellow */
+    --chart-5: 0 84% 60%; /* Error red */
+  }
+
+  .dark {
+    --background: 228 10% 10%;
+    --foreground: 0 0% 98%;
+    --card: 228 10% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 228 10% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 221 85% 54%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 228 10% 20%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 228 10% 20%;
+    --muted-foreground: 214 10% 60%;
+    --accent: 217 100% 54%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 228 10% 20%;
+    --input: 228 10% 20%;
+    --ring: 221 85% 54%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Apify-specific styling */
+@layer components {
+  .apify-gradient {
+    @apply bg-gradient-to-r from-[#1672EB] to-[#1480FF];
+  }
+
+  .instagram-gradient {
+    @apply bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400;
+  }
+
+  .metric-card {
+    @apply rounded-lg border bg-card p-6 shadow-sm transition-all hover:shadow-md;
+  }
+
+  .metric-value {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  .metric-label {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .metric-change {
+    @apply flex items-center gap-1 text-sm;
+  }
+
+  .metric-change.positive {
+    @apply text-green-600;
+  }
+
+  .metric-change.negative {
+    @apply text-red-600;
+  }
+}

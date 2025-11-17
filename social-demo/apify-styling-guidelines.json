@@ -1,0 +1,229 @@
+{
+  "data": {
+    "branding": {
+      "colorScheme": "light",
+      "fonts": [
+        {
+          "family": "Inter",
+          "role": "body"
+        },
+        {
+          "family": "GT Walsheim",
+          "role": "heading"
+        }
+      ],
+      "colors": {
+        "primary": "#1672EB",
+        "accent": "#1480FF",
+        "background": "#FFFFFF",
+        "textPrimary": "#1F2123",
+        "link": "#1480FF"
+      },
+      "typography": {
+        "fontFamilies": {
+          "primary": "Inter",
+          "heading": "GT Walsheim"
+        },
+        "fontStacks": {
+          "heading": [
+            "GT-Walsheim-Regular",
+            "sans-serif"
+          ],
+          "body": [
+            "Inter",
+            "sans-serif"
+          ],
+          "paragraph": [
+            "Inter",
+            "sans-serif"
+          ]
+        },
+        "fontSizes": {
+          "h1": "72px",
+          "h2": "58px",
+          "body": "16px"
+        }
+      },
+      "spacing": {
+        "baseUnit": 4,
+        "borderRadius": "8px"
+      },
+      "components": {
+        "input": {
+          "borderColor": "#CCCCCC",
+          "borderRadius": "8px"
+        },
+        "buttonPrimary": {
+          "background": "#242528",
+          "textColor": "#FFFFFF",
+          "borderRadius": "8px",
+          "shadow": "rgba(63, 71, 93, 0.13) 1px 2px 2.5px -2.5px, rgba(63, 71, 93, 0.14) 0.4px 0.8px 1px -1.2px, rgba(63, 71, 93, 0.15) 0px 0.5px 1.5px 0px"
+        },
+        "buttonSecondary": {
+          "background": "#FFFFFF",
+          "textColor": "#1F2123",
+          "borderRadius": "0px",
+          "shadow": "none"
+        }
+      },
+      "images": {
+        "logo": "https://apify.com/img/apify-logo/wordmark.svg",
+        "favicon": "https://apify.com/favicon.ico",
+        "ogImage": "https://apify.com/img/og/landing.png"
+      },
+      "__framework_hints": [
+        "bootstrap"
+      ],
+      "__llm_button_reasoning": {
+        "primary": {
+          "index": 0,
+          "text": "Try it now",
+          "reasoning": "Button #0 has vibrant dark background color (#242528) and action-oriented text 'Try it now', making it the primary CTA."
+        },
+        "secondary": {
+          "index": 2,
+          "text": "Contact salesLearn more",
+          "reasoning": "Button #2 has a light background color (#FFFFFF) and is less prominent compared to the primary button, making it a suitable secondary option."
+        },
+        "confidence": 0.95
+      },
+      "personality": {
+        "tone": "modern",
+        "energy": "medium",
+        "targetAudience": "tech-savvy users and developers interested in automation and web scraping solutions."
+      },
+      "designSystem": {
+        "framework": "bootstrap",
+        "componentLibrary": null
+      },
+      "confidence": {
+        "buttons": 0.95,
+        "colors": 0.9,
+        "overall": 0.925
+      }
+    },
+    "metadata": {
+      "sentry-trace": "1fc34fc0e33b942a2720d1b754321520-b26ccf8c2ee49587",
+      "og:image:type": "image/png",
+      "ogSiteName": "Apify",
+      "twitter:description": "Cloud platform for web scraping, browser automation, AI agents, and data for AI. Use 7,000+ ready-made tools, code templates, or order a custom solution.",
+      "og:image:alt": "Apify: Full-stack web scraping and data extraction platform",
+      "next-size-adjust": "",
+      "twitter:image:width": "1200",
+      "ogLocale": "en_IE",
+      "og:site_name": "Apify",
+      "og:locale": "en_IE",
+      "og:url": "https://apify.com",
+      "twitter:creator": "@apify",
+      "twitter:title": "Apify: Full-stack web scraping and data extraction platform",
+      "twitter:image:alt": "Apify: Full-stack web scraping and data extraction platform",
+      "viewport": "width=device-width, initial-scale=1",
+      "ogTitle": "Apify: Full-stack web scraping and data extraction platform",
+      "og:image:height": "630",
+      "og:description": "Cloud platform for web scraping, browser automation, AI agents, and data for AI. Use 7,000+ ready-made tools, code templates, or order a custom solution.",
+      "og:image": "https://apify.com/img/og/landing.png",
+      "og:type": "website",
+      "ogImage": "https://apify.com/img/og/landing.png",
+      "og:title": "Apify: Full-stack web scraping and data extraction platform",
+      "robots": "index,follow",
+      "baggage": "sentry-environment=prod,sentry-release=c0ae54cbba,sentry-public_key=05704c0c97344cd2a78caa419e80d2f8,sentry-trace_id=1fc34fc0e33b942a2720d1b754321520,sentry-org_id=272833,sentry-sample_rand=0.3203177435668829",
+      "twitter:card": "summary_large_image",
+      "ogDescription": "Cloud platform for web scraping, browser automation, AI agents, and data for AI. Use 7,000+ ready-made tools, code templates, or order a custom solution.",
+      "language": "en",
+      "twitter:image": "https://apify.com/img/og/landing.png",
+      "og:image:width": "1200",
+      "description": "Cloud platform for web scraping, browser automation, AI agents, and data for AI. Use 7,000+ ready-made tools, code templates, or order a custom solution.",
+      "keywords": "web scraper,web crawler,scraping,data extraction,API",
+      "title": "Apify: Full-stack web scraping and data extraction platform",
+      "ogUrl": "https://apify.com",
+      "twitter:image:height": "630",
+      "twitter:image:type": "image/png",
+      "favicon": "https://apify.com/favicon.ico",
+      "scrapeId": "9487c6df-411a-4740-a626-b85ed96ce07b",
+      "sourceURL": "https://apify.com/",
+      "url": "https://apify.com/",
+      "statusCode": 200,
+      "contentType": "text/html; charset=utf-8",
+      "proxyUsed": "basic",
+      "indexId": "b9dd878b-8882-44f5-9036-d58cd1cd8286",
+      "creditsUsed": 1
+    }
+  },
+  "scrape_id": "9487c6df-411a-4740-a626-b85ed96ce07b",
+  "id": "jeUikrqWQ3LqNu-f97PUi",
+  "startedAt": "2025-11-07T23:25:59.309Z",
+  "endedAt": "2025-11-07T23:28:57.323Z",
+  "endpoint": "scrape",
+  "formState": {
+    "extractSetupCompleted": false,
+    "urls": [],
+    "extractSchema": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "company_mission": {
+          "type": "string"
+        },
+        "supports_sso": {
+          "type": "boolean"
+        },
+        "is_open_source": {
+          "type": "boolean"
+        },
+        "is_in_yc": {
+          "type": "boolean"
+        }
+      }
+    },
+    "extractPrompt": "Extract the company details, following the schema.",
+    "enableWebSearch": false,
+    "options": {
+      "onlyMainContent": false,
+      "parsePDF": true,
+      "stealthMode": false,
+      "excludeTags": [],
+      "includeTags": [],
+      "waitFor": "",
+      "timeout": "",
+      "maxAge": "2 days",
+      "ignoreSitemap": false,
+      "crawlEntireDomain": false,
+      "sitemap": "include",
+      "limit": "10",
+      "maxDepth": "",
+      "excludePaths": [],
+      "includePaths": [],
+      "includeSubdomains": false,
+      "search": "",
+      "scrapeContentFromSearchResults": true,
+      "timeBasedSearch": "",
+      "location": "",
+      "prompt": ""
+    },
+    "formats": [
+      "branding"
+    ],
+    "sources": [
+      "web"
+    ],
+    "categories": [],
+    "jsonSchema": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "company_name": {
+          "type": "string"
+        },
+        "company_description": {
+          "type": "string"
+        }
+      }
+    },
+    "jsonPrompt": "",
+    "agent": {},
+    "url": "apify.com/",
+    "endpoint": "scrape"
+  },
+  "status": "success",
+  "version": "PrZHSzdYQhDKXuKyBbSUA"
+}
